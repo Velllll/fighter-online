@@ -1,5 +1,4 @@
 export default class PlayerControl {
-
   keys = {
     a: {
       press: false,
@@ -13,7 +12,9 @@ export default class PlayerControl {
   }
   lastKey
 
-  constructor(player) {
+  constructor(player, ws, playerId) {
+    this.playerId = playerId
+    this.ws = ws
     this.player = player
     this.addControls()
   }
@@ -61,7 +62,6 @@ export default class PlayerControl {
     } else {
       this.player.velocity.x = 0
     }
-    
   }
 
 
