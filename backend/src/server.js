@@ -1,7 +1,15 @@
-const express = require('express')
-const app = new express()
-const WSserver = require('express-ws')(app)
-const aWss = WSserver.getWss()
+const express = require('express');
+const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 const cors = require('cors')
 require('dotenv').config({path: '.env'})
 
@@ -10,40 +18,43 @@ const PORT = process.env.PORT || 5500
 app.use(express.json())
 app.use(cors())
 
-
-app.ws('/connect', function(ws, req) {
-  ws.on('close', () => {
-
-  })
-  ws.on('message', function(msg) {
-    const m = JSON.parse(msg)
-    switch (m.method) {
-      case 'connect':
-        ws.player = {
-          playerId: m.playerId
-        }
-        break;
-      case 'choseSide':
-        ws.player.side = m.side
-        ws.send(JSON.stringify({
-          method: 'choosed',
-          side: m.side
-        }))
-        break
-      case 'move':
-        ws.player.playerPosition = m.playerPosition
-        broadCastMovement(m.playerId, m.playerPosition, m.side)
-        break
-    }
-  });
-});
-
-function broadCastMovement(playerIdMove, position, side) {
-  aWss.clients.forEach(client => {
-    if(client?.player?.playerId !== playerIdMove) {
-      client.send(JSON.stringify({method: 'move', position, side}))
-    }
-  })
+sides = {
+  leftSocketId: '',
+  rightSocketId: ''
 }
 
-app.listen(PORT, () => console.log("SERVER IS WORKING ON PORT: ", PORT))
+io.on('connection', (socket) => {
+
+  socket.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+
+  socket.on('disconnect', () => {
+    cleanSides(socket)
+  })
+
+  socket.on('selectSide', ({side}) => {
+    cleanSides(socket)
+    if(side === 'left') {
+      sides.leftSocketId = socket.id
+    } else {
+      sides.rightSocketId = socket.id
+    }
+    socket.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+    socket.broadcast.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+  })
+
+  socket.on('move', () => {
+
+  })
+});
+
+function cleanSides(socket) {
+  for(let key in sides) {
+    if(sides[key] === socket.id) {
+      sides[key] = ''
+      socket.broadcast.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+    }
+  }
+}
+
+
+server.listen(PORT, () => console.log("SERVER IS WORKING ON PORT: ", PORT))
