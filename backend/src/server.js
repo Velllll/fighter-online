@@ -42,8 +42,8 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
   })
 
-  socket.on('move', () => {
-
+  socket.on('move', (position) => {
+    socket.broadcast.emit('playerMove', position)
   })
 });
 
