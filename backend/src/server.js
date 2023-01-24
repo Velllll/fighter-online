@@ -24,8 +24,7 @@ sides = {
 }
 
 io.on('connection', (socket) => {
-
-  socket.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+  sendSideStatus(socket, 'socket')
 
   socket.on('disconnect', () => {
     cleanSides(socket)
@@ -38,14 +37,25 @@ io.on('connection', (socket) => {
     } else {
       sides.rightSocketId = socket.id
     }
-    socket.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
-    socket.broadcast.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+    sendSideStatus(socket, 'everybody')
+    sendSideStatus(socket, 'socket')
   })
 
   socket.on('move', (position) => {
     socket.broadcast.emit('playerMove', position)
   })
 });
+
+/**
+ * @param {'socket' | 'everybody'} recipient 
+ */
+function sendSideStatus(socket, recipient) {
+  if(recipient !== 'socket') {
+    socket.broadcast.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+  } else {
+    socket.emit('sidesStatus', {left: !!sides.leftSocketId, right: !!sides.rightSocketId})
+  }
+}
 
 function cleanSides(socket) {
   for(let key in sides) {
