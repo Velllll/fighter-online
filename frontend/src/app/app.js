@@ -14,6 +14,7 @@ const button1 = document.querySelector('.player1')
 const button2 = document.querySelector('.player2')
 button1.disabled = false
 button2.disabled = false
+
 const socket = io("ws://localhost:5500");
 
 socket.on('connect', () => {
@@ -35,11 +36,10 @@ socket.on('playerMove', (position) => {
       x: 0,
       y: 0,
     },
+    width: 50,
+    height: 150
   }) 
   
-
-
-
   if(!playerSide) {
     if(position.side === 'left') {
       if(!player1) {
@@ -50,6 +50,8 @@ socket.on('playerMove', (position) => {
             x: 0,
             y: 0,
           },
+          width: 50,
+          height: 150
         }) 
       } else {
         player1.position = position.position
@@ -65,18 +67,16 @@ socket.on('playerMove', (position) => {
             x: 0,
             y: 0,
           },
+          width: 50,
+          height: 150
         }) 
       } else {
         player2.position = position.position
       }
-      
     }
   }
 })
 
-function renderSpecIfPlayerSideEmpty(position) {
-  
-}
 
 button1.addEventListener('click', () => {
   socket.emit('selectSide', {side: 'left'})
@@ -88,6 +88,8 @@ button1.addEventListener('click', () => {
       x: 0,
       y: 0,
     },
+    width: 50,
+    height: 150
   })
   playerControl = new PlayerControl(player1)
 
@@ -102,6 +104,8 @@ button2.addEventListener('click', () => {
       x: 0,
       y: 0,
     },
+    width: 50,
+    height: 150
   })
   playerControl = new PlayerControl(player1)
 })
