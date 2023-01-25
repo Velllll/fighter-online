@@ -54,9 +54,9 @@ export default class PlayerControl {
       this.player.velocity.y = -23
     }
     if(this.keys.a.press && this.lastKey === 'a') {
-      this.player.velocity.x = -4
+      this.player.velocity.x = -6
     } else if (this.keys.d.press && this.lastKey === 'd') {
-      this.player.velocity.x = 4
+      this.player.velocity.x = 6
     } else {
       this.player.velocity.x = 0
     }

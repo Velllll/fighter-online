@@ -17,6 +17,9 @@ export default class Player {
 
   draw() {
     this.canvasSettings.ctx.fillStyle = 'red'
+    this.canvasSettings.ctx.beginPath();
+    this.canvasSettings.ctx.arc(this.position.x + this.width * 0.5, this.position.y + this.height * 0.5, this.height * .5, 0, 2 * Math.PI)
+    this.canvasSettings.ctx.stroke();
     this.canvasSettings.ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
 

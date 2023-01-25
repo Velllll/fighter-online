@@ -17,6 +17,7 @@ export default class Game {
 
   update() {
     this.updateWsPlayer()
+    console.log(this.detectCollision())
 
     if(this.player1 && this.playerControl) {
       this.player1.update()
@@ -47,7 +48,7 @@ export default class Game {
           y: 0,
         },
         width: 50,
-        height: 150
+        height: 150,
       }) 
       
       //for spec (2 sides full)
@@ -62,7 +63,7 @@ export default class Game {
               y: 0,
             },
             width: 50,
-            height: 150
+            height: 150,
           }) 
         } else {
           this.player1.position = position.position
@@ -79,7 +80,7 @@ export default class Game {
               y: 0,
             },
             width: 50,
-            height: 150
+            height: 150,
           }) 
         } else {
           this.player2.position = position.position
@@ -108,7 +109,7 @@ export default class Game {
         y: 0,
       },
       width: 50,
-      height: 150
+      height: 150,
     })
     this.playerControl = new PlayerControl(this.player1)
   }
@@ -123,8 +124,18 @@ export default class Game {
         y: 0,
       },
       width: 50,
-      height: 150
+      height: 150,
     })
     this.playerControl = new PlayerControl(this.player1)
+  }
+
+  detectCollision() {
+    if(this.player1 && this.player2 && this.playerSide) {
+      const dx = Math.abs((this.player1.position.x + this.player1.width * 0.5) - (this.player2.position.x + this.player2.width * 0.5))
+      const dy = Math.abs((this.player1.position.y + this.player1.height * 0.5) - (this.player2.position.y + this.player2.height * 0.5))
+      const h = Math.sqrt(dx ** 2 + dy ** 2)
+      return (h < this.player1.height * .5 + this.player2.height * .5)
+    }
+    
   }
 }
