@@ -1,4 +1,4 @@
-export default class Sprite {
+export default class Player {
   gravity = .7
 
   constructor({position, canvasSettings, velocity, width, height}) {
@@ -44,5 +44,13 @@ export default class Sprite {
     if(this.position.x + this.width > this.canvasSettings.width) {
       this.position.x = this.canvasSettings.width - this.width
     }
+  }
+
+  onGround() {
+    return (this.position.y + this.height + this.velocity.y === this.canvasSettings.height)
+  }
+
+  attack() {
+    console.log('attack')
   }
 }

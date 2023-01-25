@@ -12,9 +12,7 @@ export default class PlayerControl {
   }
   lastKey
 
-  constructor(player, ws, playerId) {
-    this.playerId = playerId
-    this.ws = ws
+  constructor(player) {
     this.player = player
     this.addControls()
   }
@@ -52,8 +50,8 @@ export default class PlayerControl {
   }
 
   updateVelocity() {
-    if(this.keys.w.press) {
-      this.player.velocity.y = -15
+    if(this.keys.w.press && this.player.onGround()) {
+      this.player.velocity.y = -23
     }
     if(this.keys.a.press && this.lastKey === 'a') {
       this.player.velocity.x = -4
