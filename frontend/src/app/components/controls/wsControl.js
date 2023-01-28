@@ -10,6 +10,8 @@ export default class WsControl {
 
     this.position
 
+    this.wsPlayer
+
     this.socket.on('connect', () => {
       console.log(this.socket.id)
     })
@@ -19,7 +21,15 @@ export default class WsControl {
       this.#setDisconnectedPlayer()
     })
     this.socket.on('playerMove', (position) => {
+      if(this.wsPlayer) {
+        this.wsPlayer.playerSide = position.side
+      }
       this.position = position
+    })
+    this.socket.on('attack', (data) => {
+      if(this.wsPlayer) {
+        this.wsPlayer.animateAttack()
+      }
     })
   }
 

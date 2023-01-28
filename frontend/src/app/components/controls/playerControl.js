@@ -15,6 +15,8 @@ export default class PlayerControl {
   }
   lastKey
 
+  collide = false
+
   constructor(player) {
     this.player = player
     this.addControls()
@@ -63,7 +65,7 @@ export default class PlayerControl {
       this.player.velocity.y = -20
     }
     if(this.keys.space.press) {
-      this.player.attack()
+      this.player.attack(this.collide)
     }
     if(this.keys.a.press && this.lastKey === 'a') {
       this.player.velocity.x = -8
@@ -74,5 +76,7 @@ export default class PlayerControl {
     }
   }
 
-
+  setColide(value) {
+    this.collide = value
+  }
 }

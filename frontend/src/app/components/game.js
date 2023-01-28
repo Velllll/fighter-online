@@ -5,6 +5,7 @@ import WsControl from "./controls/wsControl"
 import Player from "./player"
 import background from '../../assets/background.png'
 import backgroundHouse from '../../assets/shop.png'
+import playerStates from './playerSprites'
 
 export default class Game {
   constructor(canvasSettings) {
@@ -35,12 +36,24 @@ export default class Game {
     if(this.wsPlayer) {
       this.wsPlayer.update()
     }
+
+    if(this.player && this.wsPlayer) {
+      this.playerControl.setColide(this.detectCollision())
+    }
+
+    //set socket to player class
+    if(this.wsControl.socket.connected && this.player && !this.player.socket) {
+      this.player.socket = this.wsControl.socket
+    }
+    //set wsPlayer to wsControllClass
+    if(this.wsPlayer && this.wsControl) {
+      this.wsControl.wsPlayer = this.wsPlayer
+    }
   }
 
   updateWsPlayer() {
     const position = this.wsControl.position
     this.removeDisconnectedPlayer(position)
-
     if(position) {
       this.wsPlayer = new Player({
         position: position.position, 
@@ -76,7 +89,8 @@ export default class Game {
       },
       width: 50,
       height: 150,
-      playerSide: this.playerSide
+      playerSide: this.playerSide,
+      playerStates: playerStates.left
     })
     this.playerControl = new PlayerControl(this.player)
   }
@@ -92,17 +106,18 @@ export default class Game {
       },
       width: 50,
       height: 150,
-      playerSide: this.playerSide
+      playerSide: this.playerSide,
+      playerStates: playerStates.right
     })
     this.playerControl = new PlayerControl(this.player)
   }
 
   detectCollision() {
-    if(this.player1 && this.player2 && this.playerSide) {
-      const dx = Math.abs((this.player1.position.x + this.player1.width * 0.5) - (this.player2.position.x + this.player2.width * 0.5))
-      const dy = Math.abs((this.player1.position.y + this.player1.height * 0.5) - (this.player2.position.y + this.player2.height * 0.5))
+    if(this.player && this.wsPlayer) {
+      const dx = Math.abs((this.player.position.x + this.player.width * 0.5) - (this.wsPlayer.position.x + this.wsPlayer.width * 0.5))
+      const dy = Math.abs((this.player.position.y + this.player.height * 0.5) - (this.wsPlayer.position.y + this.wsPlayer.height * 0.5))
       const h = Math.sqrt(dx ** 2 + dy ** 2)
-      return (h < this.player1.height * .5 + this.player2.height * .5)
+      return (h < this.player.height * .5 + this.wsPlayer.height * .5)
     }
   }
 

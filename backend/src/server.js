@@ -44,6 +44,10 @@ io.on('connection', (socket) => {
   socket.on('move', (position) => {
     socket.broadcast.emit('playerMove', position)
   })
+
+  socket.on('attack', (data) => {
+    socket.broadcast.emit('attack', data)
+  })
 });
 
 /**
