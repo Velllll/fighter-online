@@ -24,13 +24,13 @@ export default class Game {
     this.background.update()
     this.backgroundShop.update()
     this.updateWsPlayer()
-    // this.setBordersBetweenPlayers()
 
     if(this.player && this.playerControl) {
       this.player.update()
       this.playerControl.updateVelocity()
       this.wsControl.socket.emit('move', {position: this.player.position, side: this.playerSide})
     }
+    this.setBordersBetweenPlayers()
 
     if(this.wsPlayer) {
       this.wsPlayer.update()
@@ -76,6 +76,7 @@ export default class Game {
       },
       width: 50,
       height: 150,
+      playerSide: this.playerSide
     })
     this.playerControl = new PlayerControl(this.player)
   }
@@ -91,6 +92,7 @@ export default class Game {
       },
       width: 50,
       height: 150,
+      playerSide: this.playerSide
     })
     this.playerControl = new PlayerControl(this.player)
   }
@@ -104,7 +106,15 @@ export default class Game {
     }
   }
 
+  //player can not go throw the other player
   setBordersBetweenPlayers() {
-    
+    if(this.player && this.wsPlayer) {
+      if(this.playerSide === 'left' && this.player.position.x + this.player.width >= this.wsPlayer.position.x && this.player.velocity.x > 0) {
+        this.player.velocity.x = 0
+      }
+      if(this.playerSide === 'right' && this.player.position.x <= this.wsPlayer.position.x + this.wsPlayer.width && this.player.velocity.x < 0) {
+        this.player.velocity.x = 0
+      }
+    }
   }
 }

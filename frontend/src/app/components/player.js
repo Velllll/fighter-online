@@ -2,12 +2,17 @@ export default class Player {
   gravity = .7
   ground = 480
 
-  constructor({position, canvasSettings, velocity, width, height}) {
+  canAttack = true
+  health = 100
+
+  constructor({position, canvasSettings, velocity, width, height, playerSide, playerStates}) {
     this.position = position
     this.canvasSettings = canvasSettings
     this.velocity = velocity
     this.height = height
     this.width = width
+    this.playerStates = playerStates
+    this.playerSide = playerSide
   }
 
   update() {
@@ -55,6 +60,25 @@ export default class Player {
   }
 
   attack() {
-    console.log('attack')
+    if(this.canAttack) {
+      console.log('attack')
+      if(this.playerSide === 'left') {
+        let timeForNextAttack = this.position.x * 1.6
+        if(timeForNextAttack < 300) timeForNextAttack = 300
+        this.disableAttack(timeForNextAttack)
+      } else {
+        let timeForNextAttack = (this.canvasSettings.width - this.position.x - this.width) * 1.6
+        if(timeForNextAttack < 300) timeForNextAttack = 300
+        this.disableAttack(timeForNextAttack)
+      }
+      
+    }
+  }
+
+  disableAttack(sec) {
+    this.canAttack = false
+    setTimeout(() => {
+      this.canAttack = true
+    }, sec)
   }
 }
