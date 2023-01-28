@@ -9,12 +9,13 @@ import playerStates from './playerSprites'
 
 export default class Game {
   constructor(canvasSettings) {
+    this.canvasSettings = canvasSettings
+
     this.player
     this.wsPlayer
     this.playerControl
     this.playerSide
-
-    this.canvasSettings = canvasSettings
+    
     this.background = new Background(this.canvasSettings, 1024, 576, background, 0)
     this.backgroundShop = new Background(this.canvasSettings, 118, 128, backgroundHouse, 5, 700, 224, 2)
     this.sidesControl = new SidesControl(this.getPlayerLeft, this.getPlayerRight)
@@ -24,21 +25,13 @@ export default class Game {
   update() {
     this.background.update()
     this.backgroundShop.update()
-    this.updateWsPlayer()
 
-    if(this.player && this.playerControl) {
-      this.player.update()
-      this.playerControl.updateVelocity()
-      this.wsControl.socket.emit('move', {position: this.player.position, side: this.playerSide})
-    }
+    this.updatePlayer()
+    this.updateWsPlayer()
     this.setBordersBetweenPlayers()
 
-    if(this.wsPlayer) {
-      this.wsPlayer.update()
-    }
-
     if(this.player && this.wsPlayer) {
-      this.playerControl.setColide(this.detectCollision())
+      this.playerControl.collide = this.detectCollision()
     }
 
     //set socket to player class
@@ -54,7 +47,7 @@ export default class Game {
   updateWsPlayer() {
     const position = this.wsControl.position
     this.removeDisconnectedPlayer(position)
-    if(position) {
+    if(position && !this.wsPlayer) {
       this.wsPlayer = new Player({
         position: position.position, 
         canvasSettings: this.canvasSettings, 
@@ -64,7 +57,27 @@ export default class Game {
         },
         width: 50,
         height: 150,
+        playerSide: this.wsControl.wsPlayerSide,
+        playerStates: this.wsControl.wsPlayerSide === 'left' ? playerStates.left : playerStates.right,
+        ground: this.wsControl.wsPlayerSide === 'left' ? 388 : 376
       }) 
+    }
+    
+    if(position && this.wsPlayer) {
+      console.log()
+      this.wsPlayer.position = position.position
+      this.wsPlayer.playerSide = this.wsControl.wsPlayerSide,
+      this.wsPlayer.playerStates = this.wsControl.wsPlayerSide === 'left' ? playerStates.left : playerStates.right,
+      this.wsPlayer.ground = this.wsControl.wsPlayerSide === 'left' ? 388 : 376
+      this.wsPlayer.update()
+    }
+  }
+
+  updatePlayer() {
+    if(this.player && this.playerControl) {
+      this.player.update()
+      this.playerControl.updateVelocity()
+      this.wsControl.socket.emit('move', {position: this.player.position, side: this.playerSide})
     }
   }
 
@@ -107,17 +120,19 @@ export default class Game {
       width: 50,
       height: 150,
       playerSide: this.playerSide,
-      playerStates: playerStates.right
+      playerStates: playerStates.right,
+      ground: 376
     })
     this.playerControl = new PlayerControl(this.player)
   }
 
   detectCollision() {
     if(this.player && this.wsPlayer) {
-      const dx = Math.abs((this.player.position.x + this.player.width * 0.5) - (this.wsPlayer.position.x + this.wsPlayer.width * 0.5))
-      const dy = Math.abs((this.player.position.y + this.player.height * 0.5) - (this.wsPlayer.position.y + this.wsPlayer.height * 0.5))
+      
+      const dx = Math.abs((this.player.position.x + this.player.state.width * 0.65) - (this.wsPlayer.position.x + this.wsPlayer.state.width * 0.65))
+      const dy = Math.abs((this.player.position.y + this.player.state.height * 0.65) - (this.wsPlayer.position.y + this.wsPlayer.state.height * 0.65))
       const h = Math.sqrt(dx ** 2 + dy ** 2)
-      return (h < this.player.height * .5 + this.wsPlayer.height * .5)
+      return (h < this.player.state.height * .5 + this.wsPlayer.state.height * .5)
     }
   }
 

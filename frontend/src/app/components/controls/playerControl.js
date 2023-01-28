@@ -39,6 +39,21 @@ export default class PlayerControl {
         case ' ':
           this.keys.space.press = true
           break
+
+        case 'в':
+          this.keys.d.press = true
+          this.lastKey = 'd'
+          break;
+        case 'ф':
+          this.keys.a.press = true
+          this.lastKey = 'a'
+          break
+        case 'ц':
+          this.keys.w.press = true
+          break
+        case ' ':
+          this.keys.space.press = true
+          break
       }
     })
     
@@ -56,6 +71,19 @@ export default class PlayerControl {
         case ' ':
           this.keys.space.press = false
           break
+
+        case 'в':
+          this.keys.d.press = false
+          break;
+        case 'ф':
+          this.keys.a.press = false
+          break
+        case 'ц':
+          this.keys.w.press = false
+          break
+        case ' ':
+          this.keys.space.press = false
+          break
       }
     })
   }
@@ -68,15 +96,11 @@ export default class PlayerControl {
       this.player.attack(this.collide)
     }
     if(this.keys.a.press && this.lastKey === 'a') {
-      this.player.velocity.x = -8
+      this.player.velocity.x = -6
     } else if (this.keys.d.press && this.lastKey === 'd') {
-      this.player.velocity.x = 8
+      this.player.velocity.x = 6
     } else {
       this.player.velocity.x = 0
     }
-  }
-
-  setColide(value) {
-    this.collide = value
   }
 }

@@ -11,19 +11,18 @@ export default class WsControl {
     this.position
 
     this.wsPlayer
-
+    this.wsPlayerSide
+    
     this.socket.on('connect', () => {
       console.log(this.socket.id)
     })
     this.socket.on('sidesStatus', s => {
       this.button1.disabled = s.left
       this.button2.disabled = s.right
-      this.#setDisconnectedPlayer()
+      this.#removeDisconnectedPlayer()
     })
     this.socket.on('playerMove', (position) => {
-      if(this.wsPlayer) {
-        this.wsPlayer.playerSide = position.side
-      }
+      this.wsPlayerSide = position.side
       this.position = position
     })
     this.socket.on('attack', (data) => {
@@ -33,7 +32,7 @@ export default class WsControl {
     })
   }
 
-  #setDisconnectedPlayer() {
+  #removeDisconnectedPlayer() {
     this.position = null
   }
 }
