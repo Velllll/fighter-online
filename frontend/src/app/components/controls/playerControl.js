@@ -51,7 +51,7 @@ export default class PlayerControl {
 
   updateVelocity() {
     if(this.keys.w.press && this.player.onGround()) {
-      this.player.velocity.y = -23
+      this.player.velocity.y = -20
     }
     if(this.keys.a.press && this.lastKey === 'a') {
       this.player.velocity.x = -6

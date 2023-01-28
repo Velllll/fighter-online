@@ -1,13 +1,10 @@
 import { io } from "socket.io-client";
 export default class WsControl {
 
-  constructor(button1, button2, canvasSettings, playerSide) {
+  constructor(button1, button2, canvasSettings) {
     this.button1 = button1
     this.button2 = button2
-    this.player1 
-    this.player2
     this.canvasSettings = canvasSettings
-    this.playerSide = playerSide
 
     this.socket = io("ws://localhost:5500");
 

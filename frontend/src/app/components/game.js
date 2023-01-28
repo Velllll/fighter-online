@@ -1,37 +1,39 @@
+import Background from "./background"
 import PlayerControl from "./controls/playerControl"
 import SidesControl from "./controls/sidesControl"
 import WsControl from "./controls/wsControl"
 import Player from "./player"
+import background from '../../assets/background.png'
+import backgroundHouse from '../../assets/shop.png'
 
 export default class Game {
   constructor(canvasSettings) {
-    this.player1
-    this.player2
+    this.player
+    this.wsPlayer
     this.playerControl
     this.playerSide
 
     this.canvasSettings = canvasSettings
-    this.sidesControl = new SidesControl(this.getPlayer1, this.getPlayer2)
-    this.wsControl = new WsControl(this.sidesControl.button1, this.sidesControl.button2, this.canvasSettings, this.playerSide)
+    this.background = new Background(this.canvasSettings, 1024, 576, background, 0)
+    this.backgroundShop = new Background(this.canvasSettings, 118, 128, backgroundHouse, 5, 700, 224, 2)
+    this.sidesControl = new SidesControl(this.getPlayerLeft, this.getPlayerRight)
+    this.wsControl = new WsControl(this.sidesControl.button1, this.sidesControl.button2, this.canvasSettings)
   }
 
   update() {
+    this.background.update()
+    this.backgroundShop.update()
     this.updateWsPlayer()
-    console.log(this.detectCollision())
+    // this.setBordersBetweenPlayers()
 
-    if(this.player1 && this.playerControl) {
-      this.player1.update()
+    if(this.player && this.playerControl) {
+      this.player.update()
       this.playerControl.updateVelocity()
-      this.wsControl.socket.emit('move', {position: this.player1.position, side: this.playerSide})
+      this.wsControl.socket.emit('move', {position: this.player.position, side: this.playerSide})
     }
 
-    if(this.player2) {
-      this.player2.update()
-    }
-
-    // spec mod
-    if(this.player1 && !this.playerControl) {
-      this.player1.update()
+    if(this.wsPlayer) {
+      this.wsPlayer.update()
     }
   }
 
@@ -40,7 +42,7 @@ export default class Game {
     this.removeDisconnectedPlayer(position)
 
     if(position) {
-      this.player2 = new Player({
+      this.wsPlayer = new Player({
         position: position.position, 
         canvasSettings: this.canvasSettings, 
         velocity: {
@@ -50,58 +52,22 @@ export default class Game {
         width: 50,
         height: 150,
       }) 
-      
-      //for spec (2 sides full)
-      if(this.playerSide) return
-      if(position.side === 'left') {
-        if(!this.player1) {
-          this.player1 = new Player({
-            position: position.position, 
-            canvasSettings: this.canvasSettings, 
-            velocity: {
-              x: 0,
-              y: 0,
-            },
-            width: 50,
-            height: 150,
-          }) 
-        } else {
-          this.player1.position = position.position
-        }
-        
-      }
-      if(position.side === 'right') {
-        if(!this.player2) {
-          this.player2 = new Player({
-            position: position.position, 
-            canvasSettings: this.canvasSettings, 
-            velocity: {
-              x: 0,
-              y: 0,
-            },
-            width: 50,
-            height: 150,
-          }) 
-        } else {
-          this.player2.position = position.position
-        }
-      }
     }
   }
 
   removeDisconnectedPlayer(position) {
-    if(!(position && this.player2)) {
-      this.player2 = null
+    if(!(position && this.wsPlayer)) {
+      this.wsPlayer = null
       if(!this.playerSide) {
-        this.player1 = null
+        this.player = null
       }
     }
   }
 
-  getPlayer1 = () => {
+  getPlayerLeft = () => {
     this.wsControl.socket.emit('selectSide', {side: 'left'})
     this.playerSide = 'left'
-    this.player1 = new Player({
+    this.player = new Player({
       position: {x: 100, y: 0}, 
       canvasSettings: this.canvasSettings, 
       velocity: {
@@ -111,12 +77,12 @@ export default class Game {
       width: 50,
       height: 150,
     })
-    this.playerControl = new PlayerControl(this.player1)
+    this.playerControl = new PlayerControl(this.player)
   }
-  getPlayer2 = () => {
+  getPlayerRight = () => {
     this.wsControl.socket.emit('selectSide', {side: 'right'})
     this.playerSide = 'right'
-    this.player1 = new Player({
+    this.player = new Player({
       position: {x: 900, y: 0}, 
       canvasSettings: this.canvasSettings, 
       velocity: {
@@ -126,7 +92,7 @@ export default class Game {
       width: 50,
       height: 150,
     })
-    this.playerControl = new PlayerControl(this.player1)
+    this.playerControl = new PlayerControl(this.player)
   }
 
   detectCollision() {
@@ -136,6 +102,9 @@ export default class Game {
       const h = Math.sqrt(dx ** 2 + dy ** 2)
       return (h < this.player1.height * .5 + this.player2.height * .5)
     }
+  }
+
+  setBordersBetweenPlayers() {
     
   }
 }

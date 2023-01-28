@@ -1,5 +1,6 @@
 export default class Player {
   gravity = .7
+  ground = 480
 
   constructor({position, canvasSettings, velocity, width, height}) {
     this.position = position
@@ -29,9 +30,9 @@ export default class Player {
   }
 
   setBorders() {
-    if(this.position.y + this.height + this.velocity.y >= this.canvasSettings.height) {
+    if(this.position.y + this.height + this.velocity.y >= this.ground) {
       this.velocity.y = 0
-      this.position.y = this.canvasSettings.height - this.height
+      this.position.y = this.ground - this.height
     } else {
       this.velocity.y += this.gravity
     }
@@ -50,7 +51,7 @@ export default class Player {
   }
 
   onGround() {
-    return (this.position.y + this.height + this.velocity.y === this.canvasSettings.height)
+    return (this.position.y + this.height + this.velocity.y === this.ground)
   }
 
   attack() {
