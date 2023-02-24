@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  backend:
+    container_name: fighter_online_backend
+    build:
+      context: ./backend
+      target: production
+    tty: true
+    working_dir: /opt/server
+    volumes:
+      - ./backend:/opt/server
+      - /opt/server/node_modules/
+    expose:
+      - '5050'
+    ports:
+      - "5050:5050"
+
+  client:
+    container_name: fighter_online_client
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "80:80"

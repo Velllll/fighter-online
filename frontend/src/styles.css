@@ -51,6 +51,8 @@ button:disabled {
 
 body {
   background-color: rgb(37, 22, 19);
+  height: 100vh;
+  overflow: hidden;
 }
 
 canvas {

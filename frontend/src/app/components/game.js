@@ -64,7 +64,6 @@ export default class Game {
     }
     
     if(position && this.wsPlayer) {
-      console.log()
       this.wsPlayer.position = position.position
       this.wsPlayer.playerSide = this.wsControl.wsPlayerSide,
       this.wsPlayer.playerStates = this.wsControl.wsPlayerSide === 'left' ? playerStates.left : playerStates.right,
@@ -128,7 +127,6 @@ export default class Game {
 
   detectCollision() {
     if(this.player && this.wsPlayer) {
-      
       const dx = Math.abs((this.player.position.x + this.player.state.width * 0.65) - (this.wsPlayer.position.x + this.wsPlayer.state.width * 0.65))
       const dy = Math.abs((this.player.position.y + this.player.state.height * 0.65) - (this.wsPlayer.position.y + this.wsPlayer.state.height * 0.65))
       const h = Math.sqrt(dx ** 2 + dy ** 2)

@@ -96,7 +96,6 @@ export default class Player {
   }
 
   hit(collision) {
-    console.log(collision)
     if(this.socket) {
       this.animateAttack()
       this.socket.emit('attack', {
