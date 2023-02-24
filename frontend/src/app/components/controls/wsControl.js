@@ -6,7 +6,7 @@ export default class WsControl {
     this.button2 = button2
     this.canvasSettings = canvasSettings
 
-    this.socket = io("ws://localhost:5500");
+    this.socket = io("ws://81.200.156.235:5500");
 
     this.position
 
